@@ -11,7 +11,7 @@ import io.flutter.plugin.common.PluginRegistry
 
 
 class OnfidoSdkActivityEventListener(
-        val client: Onfido) : PluginRegistry.ActivityResultListener {
+    private val client: Onfido) : PluginRegistry.ActivityResultListener {
     private var flutterResult: MethodChannel.Result? = null
 
     fun setCurrentFlutterResult(result: MethodChannel.Result?) {
@@ -25,7 +25,7 @@ class OnfidoSdkActivityEventListener(
                     var docFrontId: String? = null
                     var docBackId: String? = null
                     var faceId: String? = null
-                    var faceVarient: String? = null
+                    var faceVariant: String? = null
                     if (captures.document != null) {
                         if (captures.document!!.front != null) {
                             docFrontId = captures.document!!.front!!.id
@@ -36,10 +36,10 @@ class OnfidoSdkActivityEventListener(
                     }
                     if (captures.face != null) {
                         faceId = captures.face!!.id
-                        faceVarient = captures.face!!.variant.toString()
+                        faceVariant = captures.face!!.variant.toString()
                     }
                     try {
-                        val response = Response(docFrontId, docBackId, faceId, faceVarient)
+                        val response = Response(docFrontId, docBackId, faceId, faceVariant)
                         flutterResult!!.success(response.toMap())
                     } catch (e: Exception) {
                         flutterResult!!.error("error", "Error serializing response", null)
