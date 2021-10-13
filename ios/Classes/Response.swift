@@ -23,6 +23,14 @@ func createResponse(_ results: [OnfidoResult], faceVariant: String?) -> [String:
           jsonResponse["document"]?["back"] = ["id": back.id]
       }
   }
+  // if let documentUnwrappedFront = front, case OnfidoResult.document(let documentResponseFront) = documentUnwrappedFront {
+  //   jsonResponse["document"] = ["front": ["id": documentResponseFront.id]]
+  //   if let documentUnwrappedBack = back, case OnfidoResult.document(let documentResponseBack) = documentUnwrappedBack {
+  //     if (documentResponseBack.id != documentResponseFront.id) {
+  //       jsonResponse["document"]?["back"] = ["id": documentResponseBack.id]
+  //     }
+  //   }
+  // }
 
   if let faceUnwrapped = face, case OnfidoResult.face(let faceResponse) = faceUnwrapped {
     jsonResponse["face"] = ["id": faceResponse.id, "variant": faceVariant!]

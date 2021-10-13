@@ -23,16 +23,15 @@ public class AppearancePublic: NSObject {
 public func loadAppearance(config: NSDictionary) throws -> AppearancePublic? {
 
     if let jsonResult = config as? Dictionary<String, AnyObject> {
-        let primaryColor: UIColor = (jsonResult["onfidoPrimaryColor"] == nil)
+        let primaryColor: UIColor = (jsonResult["onfidoPrimaryColor"] is NSNull)
                 ? UIColor.primaryColor : UIColor.from(hex: jsonResult["onfidoPrimaryColor"] as! String)
-        let primaryTitleColor: UIColor = (jsonResult["onfidoPrimaryButtonTextColor"] == nil)
+        let primaryTitleColor: UIColor = (jsonResult["onfidoPrimaryButtonTextColor"] is NSNull)
                 ? UIColor.white : UIColor.from(hex: jsonResult["onfidoPrimaryButtonTextColor"] as! String)
-        let primaryBackgroundPressedColor: UIColor = (jsonResult["onfidoPrimaryButtonColorPressed"] == nil)
+        let primaryBackgroundPressedColor: UIColor = (jsonResult["onfidoPrimaryButtonColorPressed"] is NSNull)
                 ? UIColor.primaryButtonColorPressed : UIColor.from(hex: jsonResult["onfidoPrimaryButtonColorPressed"] as! String)
-        let supportDarkMode: Bool = (jsonResult["onfidoIosSupportDarkMode"] == nil)
+        let supportDarkMode: Bool = (jsonResult["onfidoIosSupportDarkMode"] is NSNull)
                 ? true : jsonResult["onfidoIosSupportDarkMode"] as! Bool
 
-      
         let appearancePublic = AppearancePublic(
                 primaryColor: primaryColor,
                 primaryTitleColor: primaryTitleColor,
@@ -102,7 +101,7 @@ public func buildOnfidoConfig(config:NSDictionary, appearance: Appearance) throw
     if faceVariant == "VIDEO" {
       onfidoConfig = onfidoConfig.withFaceStep(ofVariant: .video(withConfiguration: VideoStepConfiguration(showIntroVideo: true, manualLivenessCapture: false)))
     } else if faceVariant == "PHOTO" {
-      onfidoConfig = onfidoConfig.withFaceStep(ofVariant: .photo(withConfiguration: nil))
+      onfidoConfig = onfidoConfig.withFaceStep(ofVariant: .photo(withConfiguration: PhotoStepConfiguration(showSelfieIntroScreen: true)))
     } else {
       throw NSError(domain: "Invalid or unsupported face variant", code: 0)
     }
