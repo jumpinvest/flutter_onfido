@@ -25,7 +25,7 @@ abstract class FlutterOnfido {
         throw OnfidoConfigValidationException(error);
       }
       final confingJson = config.toMap();
-      final result = await _channel.invokeMethod('start', {
+      await _channel.invokeMethod('start', {
         'config': confingJson,
         'appearance': iosAppearance.toMap(),
       });
@@ -35,7 +35,7 @@ abstract class FlutterOnfido {
       // _jsonDecoder.convert(_jsonEncoder.convert(result)));
 
     } catch (e) {
-      log('${e.toString()}');
+      log(e.toString());
       rethrow;
     }
   }
