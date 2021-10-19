@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 enum OnfidoDocumentType {
   PASSPORT,
   DRIVING_LICENCE,
@@ -5,10 +6,11 @@ enum OnfidoDocumentType {
   RESIDENCE_PERMIT,
   VISA,
   WORK_PERMIT,
-  GENERIC
+  GENERIC,
+  UNKNOWN
 }
 
-enum OnfidoCaptureType { PHOTO, VIDEO }
+enum OnfidoCaptureType { PHOTO, VIDEO, UNKNOWN }
 
 enum OnfidoCountryCode {
   AFG,
@@ -260,4 +262,5 @@ enum OnfidoCountryCode {
   ZMB,
   ZWE,
   ALA,
+  UNKNOWN,
 }

@@ -27,8 +27,8 @@ class Response(frontId: String?, backId: String?, faceId: String?, faceVariant: 
         }
     }
 
-    var document: Document? = null
-    var face: Face? = null
+    private var document: Document? = null
+    private var face: Face? = null
 
     init {
         initDocument(frontId, backId)
@@ -53,19 +53,20 @@ class Response(frontId: String?, backId: String?, faceId: String?, faceVariant: 
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun toMap(): HashMap<String, Any> {
         val map: HashMap<String, Any> = HashMap()
         if (document != null) {
-            map.put("document", HashMap<String, Any>())
-            if (document!!.front != null) {
-                (map["document"] as HashMap<String, Any>)["front"] = hashMapOf("id" to document!!.front?.id)
+            map["document"] = HashMap<String, Any>()
+            if (document?.front != null) {
+                (map["document"] as HashMap<String, Any?>)["front"] = hashMapOf("id" to document!!.front?.id)
             }
-            if (document!!.back != null) {
+            if (document?.back != null) {
                 (map["document"] as HashMap<String, Any>)["back"] = hashMapOf("id" to document!!.back?.id)
             }
         }
         if (face != null) {
-            map.put("face", hashMapOf("variant" to face!!.variant, "id" to face!!.id))
+            map["face"] = hashMapOf("variant" to face?.variant, "id" to face?.id)
         }
         return map
     }

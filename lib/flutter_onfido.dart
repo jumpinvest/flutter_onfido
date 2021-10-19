@@ -1,44 +1,55 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'dart:async';
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_onfido/onfido_config.dart';
+
+import 'onfido_config.dart';
 
 export './enums.dart';
 export './onfido_config.dart';
 
-class FlutterOnfido {
-  static const MethodChannel _channel = const MethodChannel('flutter_onfido');
-  static const JsonDecoder _jsonDecoder = const JsonDecoder();
-  static const JsonEncoder _jsonEncoder = const JsonEncoder();
+abstract class FlutterOnfido {
+  FlutterOnfido._();
+
+  static const _channel = MethodChannel('flutter_onfido');
 
   static Future<OnfidoResult> start({
     required OnfidoConfig config,
     OnfidoIOSAppearance iosAppearance = const OnfidoIOSAppearance(),
   }) async {
-    final error = _validateConfig(config);
-    if (error != null) {
-      throw OnfidoConfigValidationException(error);
+    try {
+      final error = _validateConfig(config);
+      if (error != null) {
+        throw OnfidoConfigValidationException(error);
+      }
+      final confingJson = config.toMap();
+      final result = await _channel.invokeMethod('start', {
+        'config': confingJson,
+        'appearance': iosAppearance.toMap(),
+      });
+
+      return OnfidoResult();
+      // return OnfidoResult.fromJson(
+      // _jsonDecoder.convert(_jsonEncoder.convert(result)));
+
+    } catch (e) {
+      log('${e.toString()}');
+      rethrow;
     }
-    final confingJson = config.toJson();
-    final result = await _channel.invokeMethod('start', {
-      "config": confingJson,
-      "appearance": iosAppearance.toJson(),
-    });
-    return OnfidoResult.fromJson(
-        _jsonDecoder.convert(_jsonEncoder.convert(result)));
   }
 
   static String? _validateConfig(OnfidoConfig config) {
     if (config.sdkToken == null || config.sdkToken!.isEmpty) {
-      return "Sdk token is missing";
+      return 'Sdk token is missing';
     }
     if (!RegExp(r'^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$')
         .hasMatch(config.sdkToken!)) {
-      return "Sdk token is not valid JWT";
+      return 'Sdk token is not valid JWT';
     }
     if (config.flowSteps == null) {
-      return "Flow steps configuration is missing";
+      return 'Flow steps configuration is missing';
     }
     if (config.flowSteps!.captureDocument == null &&
         config.flowSteps!.captureFace == null) {
@@ -49,6 +60,6 @@ class FlutterOnfido {
 }
 
 class OnfidoConfigValidationException implements Exception {
-  final String message;
   OnfidoConfigValidationException(this.message);
+  final String message;
 }
