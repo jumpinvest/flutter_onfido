@@ -145,8 +145,9 @@ class OnfidoResult {
 
   factory OnfidoResult.fromMap(Map<String, dynamic> map) {
     return OnfidoResult(
-      document: OnfidoDocumentResult.fromMap(map['document']),
-      face: OnfidoFaceResult.fromMap(map['face']),
+      document: OnfidoDocumentResult.fromMap(
+          Map<String, dynamic>.from(map['document'])),
+      face: OnfidoFaceResult.fromMap(Map<String, dynamic>.from(map['face'])),
     );
   }
 
@@ -159,6 +160,9 @@ class OnfidoResult {
       'face': face?.toMap(),
     };
   }
+
+  @override
+  String toString() => 'OnfidoResult(document: $document, face: $face)';
 }
 
 class OnfidoFaceResult {
@@ -167,8 +171,8 @@ class OnfidoFaceResult {
   factory OnfidoFaceResult.fromMap(Map<String, dynamic> map) {
     return OnfidoFaceResult(
       id: map['id'],
-      variant: enumFromString(
-        key: map['variant'],
+      variant: enumFromString<OnfidoCaptureType>(
+        key: map['variant'] as String,
         values: OnfidoCaptureType.values,
         orElse: OnfidoCaptureType.UNKNOWN,
       ),
@@ -184,6 +188,9 @@ class OnfidoFaceResult {
       'variant': variant != null ? enumToString(variant!) : null,
     };
   }
+
+  @override
+  String toString() => 'OnfidoFaceResult(id: $id, variant: $variant)';
 }
 
 class OnfidoDocumentResult {
@@ -191,8 +198,10 @@ class OnfidoDocumentResult {
 
   factory OnfidoDocumentResult.fromMap(Map<String, dynamic> map) {
     return OnfidoDocumentResult(
-      front: OnfidoDocumentResultDetail.fromMap(map['front']),
-      back: OnfidoDocumentResultDetail.fromMap(map['back']),
+      front: OnfidoDocumentResultDetail.fromMap(
+          Map<String, dynamic>.from(map['front'])),
+      back: OnfidoDocumentResultDetail.fromMap(
+          Map<String, dynamic>.from(map['back'])),
     );
   }
 
@@ -205,6 +214,9 @@ class OnfidoDocumentResult {
       'back': back?.toMap(),
     };
   }
+
+  @override
+  String toString() => 'OnfidoDocumentResult(front: $front, back: $back)';
 }
 
 class OnfidoDocumentResultDetail {
@@ -221,15 +233,18 @@ class OnfidoDocumentResultDetail {
   }
 
   final String? id;
+
+  @override
+  String toString() => 'OnfidoDocumentResultDetail(id: $id)';
 }
 
 T enumFromString<T>({
-  required String key,
+  required String? key,
   required List<T> values,
   required T orElse,
 }) =>
     values.firstWhere(
-        (v) => key.toLowerCase() == enumToString(v!).toLowerCase(),
+        (v) => key?.toLowerCase() == enumToString(v!).toLowerCase(),
         orElse: () => orElse);
 
 String enumToString(Object o) => o.toString().split('.').last;
