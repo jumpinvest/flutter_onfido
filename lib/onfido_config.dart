@@ -78,10 +78,13 @@ class OnfidoCaptureDocumentStep {
   final OnfidoCountryCode? countryCode;
 
   Map<String, dynamic> toMap() {
-    return {
-      'docType': docType != null ? enumToString(docType!) : null,
-      'countryCode': countryCode != null ? enumToString(countryCode!) : null,
-    };
+    if(docType != null && countryCode != null){
+      return {
+        'docType': docType != null ? enumToString(docType!) : null,
+        'countryCode': countryCode != null ? enumToString(countryCode!) : null,
+      };
+    }
+    return {};
   }
 }
 
