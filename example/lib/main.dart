@@ -31,8 +31,8 @@ class _MyAppState extends State<MyApp> {
           flowSteps: OnfidoFlowSteps(
             welcome: true,
             captureDocument: OnfidoCaptureDocumentStep(
-              countryCode: OnfidoCountryCode.BRA,
-              docType: OnfidoDocumentType.GENERIC,
+              countryCode: null,
+              docType: null,
             ),
             captureFace: OnfidoCaptureFaceStep(OnfidoCaptureType.VIDEO),
           ),
