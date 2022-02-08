@@ -48,14 +48,14 @@ public func loadAppearanceFromConfig(config: NSDictionary) throws -> Appearance 
     let appearancePublic = try loadAppearance(config: config)
 
     if let appearancePublic = appearancePublic {
-        return Appearance(
-            primaryColor: appearancePublic.primaryColor,
-            primaryTitleColor: appearancePublic.primaryTitleColor,
-            primaryBackgroundPressedColor: appearancePublic.primaryBackgroundPressedColor,
-            supportDarkMode: appearancePublic.supportDarkMode
-        )
+        var appearance = Appearance()
+        appearance.primaryColor = appearancePublic.primaryColor
+        appearance.primaryTitleColor = appearancePublic.primaryTitleColor
+        appearance.primaryBackgroundPressedColor = appearancePublic.primaryBackgroundPressedColor
+        appearance.supportDarkMode = appearancePublic.supportDarkMode
+        return appearance
     } else {
-        return Appearance.default;
+        return Appearance.default
     }
 }
 
@@ -216,9 +216,11 @@ extension UIColor {
 }
 
 extension Appearance {
-
-    static let `default` = Appearance(
-            primaryColor: UIColor.primaryColor,
-            primaryTitleColor: UIColor.white,
-            primaryBackgroundPressedColor: UIColor.primaryButtonColorPressed)
+    static let `default`: Appearance = {
+        var appearance = Appearance()
+        appearance.primaryColor = UIColor.primaryColor
+        appearance.primaryTitleColor = UIColor.white
+        appearance.primaryBackgroundPressedColor = UIColor.primaryButtonColorPressed
+        return appearance
+    }()
 }
