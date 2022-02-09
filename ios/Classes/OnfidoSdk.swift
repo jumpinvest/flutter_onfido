@@ -48,7 +48,7 @@ public func loadAppearanceFromConfig(config: NSDictionary) throws -> Appearance 
     let appearancePublic = try loadAppearance(config: config)
 
     if let appearancePublic = appearancePublic {
-        var appearance = Appearance()
+        let appearance = Appearance()
         appearance.primaryColor = appearancePublic.primaryColor
         appearance.primaryTitleColor = appearancePublic.primaryTitleColor
         appearance.primaryBackgroundPressedColor = appearancePublic.primaryBackgroundPressedColor
@@ -138,7 +138,7 @@ class OnfidoSdk: NSObject {
 
       let onfidoFlow = OnfidoFlow(withConfiguration: builtOnfidoConfig)
         .with(responseHandler: { [weak self] response in 
-          guard let `self` = self else { return }
+          guard let _ = self else { return }
           switch response {
             case let .error(error):
               result(FlutterError(code: "error", message: "Encountered an error: \(error)", details: nil))
@@ -217,7 +217,7 @@ extension UIColor {
 
 extension Appearance {
     static let `default`: Appearance = {
-        var appearance = Appearance()
+        let appearance = Appearance()
         appearance.primaryColor = UIColor.primaryColor
         appearance.primaryTitleColor = UIColor.white
         appearance.primaryBackgroundPressedColor = UIColor.primaryButtonColorPressed
