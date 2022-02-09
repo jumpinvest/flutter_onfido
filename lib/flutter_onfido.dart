@@ -1,6 +1,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
@@ -24,14 +25,13 @@ abstract class FlutterOnfido {
       if (error != null) {
         throw OnfidoConfigValidationException(error);
       }
-      final confingJson = config.toMap();
       final result = await _channel.invokeMethod('start', {
-        'config': confingJson,
+        'config': config.toMap(),
         'appearance': iosAppearance.toMap(),
       });
-      return OnfidoResult.fromMap(Map<String, dynamic>.from(result));
+      return OnfidoResult.fromMap(Map<String, dynamic>.from( jsonDecode(jsonEncode(result)) ));
     } catch (e) {
-      log(e.toString());
+      log(jsonEncode(e));
       rethrow;
     }
   }
@@ -57,5 +57,6 @@ abstract class FlutterOnfido {
 
 class OnfidoConfigValidationException implements Exception {
   OnfidoConfigValidationException(this.message);
+
   final String message;
 }

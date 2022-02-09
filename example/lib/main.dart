@@ -21,8 +21,7 @@ class _MyAppState extends State<MyApp> {
       //     "sdk_sandbox_us.KnnlEbnTf1o.LzRSAHlbKV0hUNc7a4Owtd_JsPnqX6wj";
 
       const exampleSdkToken =
-          'eyJhbGciOiJFUzUxMiJ9.eyJleHAiOjE2MzU4NTU3MDcsInBheWxvYWQiOnsiYXBwIjoiNDdlNzI2NGEtOTNmNC00YzdhLWFiMGUtZDc2M2YzZGIzNTY4IiwiY2xpZW50X3V1aWQiOiI2NWQ3NTQ1YS0zYzc5LTQxYjItOTE0YS0xMmUzMWQ4ZThlMGIiLCJpc19zYW5kYm94Ijp0cnVlLCJzYXJkaW5lX3Nlc3Npb24iOiJkODc4MDIwNS1iOWIwLTRkZDgtYWRiNy0wMWVmZWIxZTJkMTAifSwidXVpZCI6ImdiMU80UUwzYWlfIiwidXJscyI6eyJ0ZWxlcGhvbnlfdXJsIjoiaHR0cHM6Ly90ZWxlcGhvbnkudXMub25maWRvLmNvbSIsImRldGVjdF9kb2N1bWVudF91cmwiOiJodHRwczovL3Nkay51cy5vbmZpZG8uY29tIiwic3luY191cmwiOiJodHRwczovL3N5bmMub25maWRvLmNvbSIsImhvc3RlZF9zZGtfdXJsIjoiaHR0cHM6Ly9pZC5vbmZpZG8uY29tIiwiYXV0aF91cmwiOiJodHRwczovL2FwaS51cy5vbmZpZG8uY29tIiwib25maWRvX2FwaV91cmwiOiJodHRwczovL2FwaS51cy5vbmZpZG8uY29tIn19.MIGHAkFOCdRoQyVlUA6idnflBzaC6zJe7g1x2s66CzuctdnVEP22eKw_FvIlQtcw8bA8RKx3JrqtNOFRF7nxNNgjQ38JygJCAefxjBp3nwf-7OyBku6vkh62pLqGcnPDnvQ8GFeYMRfSt7EHeXF4rCZJJG8VBTFa1NpU92D_FWOLSDKbw21xxrpO';
-      // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+          'eyJhbGciOiJFUzUxMiJ9.eyJleHAiOjE2NDQ0MjAwNTIsInBheWxvYWQiOnsiYXBwIjoiYzE1ZDI0MzUtZmJlMy00MDQzLWE4NWMtOGMzMmQ4OTA0MmZjIiwiY2xpZW50X3V1aWQiOiI2NWQ3NTQ1YS0zYzc5LTQxYjItOTE0YS0xMmUzMWQ4ZThlMGIiLCJhcHBsaWNhdGlvbl9pZCI6ImNvbS5mbHVlbmN5YmFuay5mbHV0dGVyX29uZmlkb19leGFtcGxlIiwiaXNfc2FuZGJveCI6dHJ1ZSwic2FyZGluZV9zZXNzaW9uIjoiNjI0ZmVlMTctYjgzNC00MjIxLWE5NDUtNmEwNzU5MWFmNTgxIn0sInV1aWQiOiJ1cmFwSU5JNWpOOCIsInVybHMiOnsidGVsZXBob255X3VybCI6Imh0dHBzOi8vdGVsZXBob255LnVzLm9uZmlkby5jb20iLCJkZXRlY3RfZG9jdW1lbnRfdXJsIjoiaHR0cHM6Ly9zZGsudXMub25maWRvLmNvbSIsInN5bmNfdXJsIjoiaHR0cHM6Ly9zeW5jLm9uZmlkby5jb20iLCJob3N0ZWRfc2RrX3VybCI6Imh0dHBzOi8vaWQub25maWRvLmNvbSIsImF1dGhfdXJsIjoiaHR0cHM6Ly9hcGkudXMub25maWRvLmNvbSIsIm9uZmlkb19hcGlfdXJsIjoiaHR0cHM6Ly9hcGkudXMub25maWRvLmNvbSJ9fQ.MIGHAkFH7Tnx0gZUe2sUL0QzJbXRANwN3ced9f3LrFFNXpLatkXNux5CVaqI-cQ3OWbL6ttLmHrRQetlRM3nHwi6eyJ0IAJCAKm2dBCXaPl7SHSP9ArzvYQExH0K6F_zsZytozTT44RnndGXmaAOhtU3e8MeJ3JRP-JHa9nnhRj7JBC3C1SSQE1C';
       final result = await FlutterOnfido.start(
         config: OnfidoConfig(
           sdkToken:
@@ -34,7 +33,7 @@ class _MyAppState extends State<MyApp> {
               countryCode: null,
               docType: null,
             ),
-            captureFace: OnfidoCaptureFaceStep(OnfidoCaptureType.VIDEO),
+            captureFace: OnfidoCaptureFaceStep(OnfidoCaptureType.PHOTO),
           ),
         ),
         iosAppearance: const OnfidoIOSAppearance(

@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'enums.dart';
 
 class OnfidoConfig {
@@ -78,7 +81,7 @@ class OnfidoCaptureDocumentStep {
   final OnfidoCountryCode? countryCode;
 
   Map<String, dynamic> toMap() {
-    if(docType != null && countryCode != null){
+    if (docType != null && countryCode != null) {
       return {
         'docType': docType != null ? enumToString(docType!) : null,
         'countryCode': countryCode != null ? enumToString(countryCode!) : null,
@@ -90,6 +93,7 @@ class OnfidoCaptureDocumentStep {
 
 class OnfidoCaptureFaceStep {
   OnfidoCaptureFaceStep(this.type);
+
   factory OnfidoCaptureFaceStep.fromMap(Map<String, dynamic> map) {
     return OnfidoCaptureFaceStep(
       enumFromString(
@@ -99,6 +103,7 @@ class OnfidoCaptureFaceStep {
       ),
     );
   }
+
   final OnfidoCaptureType? type;
 
   Map<String, dynamic> toMap() {
@@ -146,14 +151,6 @@ class OnfidoResult {
     this.face,
   });
 
-  factory OnfidoResult.fromMap(Map<String, dynamic> map) {
-    return OnfidoResult(
-      document: OnfidoDocumentResult.fromMap(
-          Map<String, dynamic>.from(map['document'])),
-      face: OnfidoFaceResult.fromMap(Map<String, dynamic>.from(map['face'])),
-    );
-  }
-
   final OnfidoDocumentResult? document;
   final OnfidoFaceResult? face;
 
@@ -164,8 +161,19 @@ class OnfidoResult {
     };
   }
 
-  @override
-  String toString() => 'OnfidoResult(document: $document, face: $face)';
+  factory OnfidoResult.fromMap(Map<String, dynamic> map) {
+    return OnfidoResult(
+      document: map['document'] != null
+          ? OnfidoDocumentResult.fromMap(map['document'])
+          : null,
+      face: map['face'] != null ? OnfidoFaceResult.fromMap(map['face']) : null,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory OnfidoResult.fromJson(String source) =>
+      OnfidoResult.fromMap(json.decode(source));
 }
 
 class OnfidoFaceResult {
@@ -199,15 +207,6 @@ class OnfidoFaceResult {
 class OnfidoDocumentResult {
   OnfidoDocumentResult({this.front, this.back});
 
-  factory OnfidoDocumentResult.fromMap(Map<String, dynamic> map) {
-    return OnfidoDocumentResult(
-      front: OnfidoDocumentResultDetail.fromMap(
-          Map<String, dynamic>.from(map['front'])),
-      back: OnfidoDocumentResultDetail.fromMap(
-          Map<String, dynamic>.from(map['back'])),
-    );
-  }
-
   final OnfidoDocumentResultDetail? front;
   final OnfidoDocumentResultDetail? back;
 
@@ -218,27 +217,44 @@ class OnfidoDocumentResult {
     };
   }
 
-  @override
-  String toString() => 'OnfidoDocumentResult(front: $front, back: $back)';
+  factory OnfidoDocumentResult.fromMap(Map<String, dynamic> map) {
+    return OnfidoDocumentResult(
+      front: map['front'] != null
+          ? OnfidoDocumentResultDetail.fromMap(map['front'])
+          : null,
+      back: map['back'] != null
+          ? OnfidoDocumentResultDetail.fromMap(map['back'])
+          : null,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory OnfidoDocumentResult.fromJson(String source) =>
+      OnfidoDocumentResult.fromMap(json.decode(source));
 }
 
 class OnfidoDocumentResultDetail {
   OnfidoDocumentResultDetail(this.id);
-  factory OnfidoDocumentResultDetail.fromMap(Map<String, dynamic> map) {
-    return OnfidoDocumentResultDetail(
-      map['id'],
-    );
-  }
+
+  final String? id;
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
     };
   }
 
-  final String? id;
+  factory OnfidoDocumentResultDetail.fromMap(Map<String, dynamic> map) {
+    return OnfidoDocumentResultDetail(
+      map['id'],
+    );
+  }
 
-  @override
-  String toString() => 'OnfidoDocumentResultDetail(id: $id)';
+  String toJson() => json.encode(toMap());
+
+  factory OnfidoDocumentResultDetail.fromJson(String source) =>
+      OnfidoDocumentResultDetail.fromMap(json.decode(source));
 }
 
 T enumFromString<T>({
