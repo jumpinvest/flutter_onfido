@@ -62,13 +62,17 @@ public func loadAppearanceFromConfig(config: NSDictionary) throws -> Appearance 
 public func buildOnfidoConfig(config:NSDictionary, appearance: Appearance) throws -> Onfido.OnfidoConfigBuilder {
   let sdkToken:String = config["sdkToken"] as! String
   let flowSteps:NSDictionary? = config["flowSteps"] as? NSDictionary
+  let locale:String? = config["locale"] as? String
   let captureDocument:NSDictionary? = flowSteps?["captureDocument"] as? NSDictionary
   let captureFace:NSDictionary? = flowSteps?["captureFace"] as? NSDictionary
 
   var onfidoConfig = OnfidoConfig.builder()
     .withSDKToken(sdkToken)
     .withAppearance(appearance)
- 
+
+  if let locale = locale {
+    onfidoConfig = onfidoConfig.withCustomLocalization(andTableName: "Onfido_\(locale)")
+  }
 
   if flowSteps?["welcome"] as? Bool == true {
     onfidoConfig = onfidoConfig.withWelcomeStep()

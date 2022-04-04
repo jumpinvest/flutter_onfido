@@ -6,22 +6,26 @@ class OnfidoConfig {
   const OnfidoConfig({
     required this.sdkToken,
     required this.flowSteps,
+    this.locale,
   });
 
   factory OnfidoConfig.fromMap(Map<String, dynamic> map) {
     return OnfidoConfig(
       sdkToken: map['sdkToken'],
       flowSteps: OnfidoFlowSteps.fromMap(map['flowSteps']),
+      locale: map['locale'],
     );
   }
 
   final String? sdkToken;
   final OnfidoFlowSteps? flowSteps;
+  final String? locale;
 
   Map<String, dynamic> toMap() {
     return {
       'sdkToken': sdkToken,
       'flowSteps': flowSteps?.toMap(),
+      'locale': locale,
     };
   }
 }

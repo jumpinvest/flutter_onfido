@@ -9,6 +9,7 @@ import com.onfido.android.sdk.capture.ui.options.FlowStep
 import com.onfido.android.sdk.capture.ui.options.stepbuilder.DocumentCaptureStepBuilder
 import com.onfido.android.sdk.capture.utils.CountryCode
 import io.flutter.plugin.common.MethodChannel
+import java.util.*
 
 
 class OnfidoSdk(
@@ -34,8 +35,10 @@ class OnfidoSdk(
         try {
             val sdkToken: String
             val flowStepsWithOptions: Array<FlowStep>
+            val locale: String?
             try {
                 sdkToken = config["sdkToken"].toString()
+                locale = config["locale"]?.toString()
                 flowStepsWithOptions = getFlowStepsFromConfig(config)
             } catch (e: Exception) {
                 currentFlutterResult?.error("config_error", e.message, null)
@@ -50,11 +53,13 @@ class OnfidoSdk(
             }
 
             try {
-                val onfidoConfig = OnfidoConfig.builder(currentActivity!!)
+                var onfidoConfig = OnfidoConfig.builder(currentActivity!!)
                     .withSDKToken(sdkToken)
                     .withCustomFlow(flowStepsWithOptions)
-                    .build()
-                client.startActivityForResult(currentActivity!!, 1, onfidoConfig)
+               if (locale != null) {
+                   onfidoConfig = onfidoConfig.withLocale(Locale(locale))
+               }
+                client.startActivityForResult(currentActivity!!, 1, onfidoConfig.build())
             } catch (e: Exception) {
                 currentFlutterResult?.error("error", "Failed to show Onfido page", null)
                 setFlutterResult(null)
