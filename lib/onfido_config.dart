@@ -7,6 +7,7 @@ class OnfidoConfig {
     required this.sdkToken,
     required this.flowSteps,
     this.locale,
+    this.localizationTable,
   });
 
   factory OnfidoConfig.fromMap(Map<String, dynamic> map) {
@@ -19,13 +20,23 @@ class OnfidoConfig {
 
   final String? sdkToken;
   final OnfidoFlowSteps? flowSteps;
+
+  /// Must be in xx or xx_YY formats.
   final String? locale;
+
+  /// For iOS only.
+  ///
+  /// This will determine which localization table prefix the sdk will try to
+  /// get the custom [locale] localizations from.
+  /// Default is `Onfido_` which will result in `Onfido_${locale}.strings` file.
+  final String? localizationTable;
 
   Map<String, dynamic> toMap() {
     return {
       'sdkToken': sdkToken,
       'flowSteps': flowSteps?.toMap(),
       'locale': locale,
+      'localizationTable': localizationTable,
     };
   }
 }
@@ -84,13 +95,10 @@ class OnfidoCaptureDocumentStep {
   final OnfidoCountryCode? countryCode;
 
   Map<String, dynamic> toMap() {
-    if (docType != null && countryCode != null) {
-      return {
-        'docType': docType != null ? enumToString(docType!) : null,
-        'countryCode': countryCode != null ? enumToString(countryCode!) : null,
-      };
-    }
-    return {};
+    return {
+      if (docType != null) 'docType': enumToString(docType!),
+      if (countryCode != null) 'countryCode': enumToString(countryCode!),
+    };
   }
 }
 

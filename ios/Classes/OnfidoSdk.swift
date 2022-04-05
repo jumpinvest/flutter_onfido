@@ -71,29 +71,37 @@ public func buildOnfidoConfig(config:NSDictionary, appearance: Appearance) throw
     .withAppearance(appearance)
 
   if let locale = locale {
-    onfidoConfig = onfidoConfig.withCustomLocalization(andTableName: "Onfido_\(locale)")
+    let tableName = config["localizationTable"] as? String ?? "Onfido_"
+    onfidoConfig = onfidoConfig.withCustomLocalization(andTableName: "\(tableName)\(locale)")
   }
 
   if flowSteps?["welcome"] as? Bool == true {
     onfidoConfig = onfidoConfig.withWelcomeStep()
   }
 
-  if let docType = captureDocument?["docType"] as? String, let countryCode = captureDocument?["countryCode"] as? String {
+  if let docType = captureDocument?["docType"] as? String {
+     let countryCode = captureDocument?["countryCode"] as? String
      switch docType {
       case "PASSPORT":
         onfidoConfig = onfidoConfig.withDocumentStep(ofType: .passport(config: PassportConfiguration()))
       case "DRIVING_LICENCE":
-        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .drivingLicence(config: DrivingLicenceConfiguration(country: countryCode)))
+        let stepConfig = countryCode.map(DrivingLicenceConfiguration.init(country:))
+        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .drivingLicence(config: stepConfig))
       case "NATIONAL_IDENTITY_CARD":
-        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .nationalIdentityCard(config: NationalIdentityConfiguration(country: countryCode)))
+        let stepConfig = countryCode.map(NationalIdentityConfiguration.init(country:))
+        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .nationalIdentityCard(config: stepConfig))
       case "RESIDENCE_PERMIT":
-        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .residencePermit(config: ResidencePermitConfiguration(country: countryCode)))
+        let stepConfig = countryCode.map(ResidencePermitConfiguration.init(country:))
+        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .residencePermit(config: stepConfig))
       case "VISA":
-        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .visa(config: VisaConfiguration(country: countryCode)))
+        let stepConfig = countryCode.map(VisaConfiguration.init(country:))
+        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .visa(config: stepConfig))
       case "WORK_PERMIT":
-        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .workPermit(config: WorkPermitConfiguration(country: countryCode)))
+        let stepConfig = countryCode.map(WorkPermitConfiguration.init(country:))
+        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .workPermit(config: stepConfig))
       case "GENERIC":
-        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .generic(config: GenericDocumentConfiguration(country: countryCode)))
+        let stepConfig = countryCode.map(GenericDocumentConfiguration.init(country:))
+        onfidoConfig = onfidoConfig.withDocumentStep(ofType: .generic(config: stepConfig))
       default:
         throw NSError(domain: "Unsupported document type", code: 0)
     }
