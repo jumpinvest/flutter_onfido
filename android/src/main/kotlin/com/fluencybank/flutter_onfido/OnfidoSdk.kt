@@ -9,6 +9,7 @@ import com.onfido.android.sdk.capture.ui.options.FlowStep
 import com.onfido.android.sdk.capture.ui.options.stepbuilder.DocumentCaptureStepBuilder
 import com.onfido.android.sdk.capture.utils.CountryCode
 import io.flutter.plugin.common.MethodChannel
+import java.util.*
 
 
 class OnfidoSdk(
@@ -34,8 +35,10 @@ class OnfidoSdk(
         try {
             val sdkToken: String
             val flowStepsWithOptions: Array<FlowStep>
+            val locale: String?
             try {
                 sdkToken = config["sdkToken"].toString()
+                locale = config["locale"]?.toString()
                 flowStepsWithOptions = getFlowStepsFromConfig(config)
             } catch (e: Exception) {
                 currentFlutterResult?.error("config_error", e.message, null)
@@ -50,11 +53,13 @@ class OnfidoSdk(
             }
 
             try {
-                val onfidoConfig = OnfidoConfig.builder(currentActivity!!)
+                var onfidoConfig = OnfidoConfig.builder(currentActivity!!)
                     .withSDKToken(sdkToken)
                     .withCustomFlow(flowStepsWithOptions)
-                    .build()
-                client.startActivityForResult(currentActivity!!, 1, onfidoConfig)
+               if (locale != null) {
+                   onfidoConfig = onfidoConfig.withLocale(Locale(locale))
+               }
+                client.startActivityForResult(currentActivity!!, 1, onfidoConfig.build())
             } catch (e: Exception) {
                 currentFlutterResult?.error("error", "Failed to show Onfido page", null)
                 setFlutterResult(null)
@@ -109,8 +114,7 @@ class OnfidoSdk(
                 flowStepList.add(FlowStep.CAPTURE_DOCUMENT)
             } else if (captureDocument != null) {
                 val docTypeExists: Boolean = captureDocument.containsKey("docType")
-                val countryCodeExists: Boolean = captureDocument.containsKey("countryCode")
-                if (docTypeExists && countryCodeExists) {
+                if (docTypeExists) {
                     val docTypeString: String = captureDocument["docType"] as String
                     val docTypeEnum: DocumentType
                     try {
@@ -119,36 +123,48 @@ class OnfidoSdk(
                         System.err.println("Unexpected docType value: [$docTypeString]")
                         throw Exception("Unexpected docType value.")
                     }
-                    val countryCodeString: String = captureDocument["countryCode"] as String
-                    val countryCodeEnum = findCountryCodeByAlpha3(countryCodeString)
-                    if (countryCodeEnum == null) {
-                        System.err.println("Unexpected countryCode value: [$countryCodeString]")
-                        throw Exception("Unexpected countryCode value.")
-                    }
+                    val countryCodeString: String? = captureDocument["countryCode"] as? String
+                    val countryCodeEnum = countryCodeString?.let { findCountryCodeByAlpha3(it) }
                     val flowStep = when (docTypeEnum) {
-                        DocumentType.PASSPORT -> DocumentCaptureStepBuilder.forPassport().build()
+                        DocumentType.PASSPORT -> DocumentCaptureStepBuilder.forPassport()
                         DocumentType.NATIONAL_IDENTITY_CARD -> DocumentCaptureStepBuilder.forNationalIdentity()
-                            .withCountry(countryCodeEnum).build()
+                                .let {
+                                    if (countryCodeEnum != null) it.withCountry(countryCodeEnum)
+                                    else it
+                                }
                         DocumentType.DRIVING_LICENCE -> DocumentCaptureStepBuilder.forDrivingLicence()
-                            .withCountry(countryCodeEnum).build()
+                                .let {
+                                    if (countryCodeEnum != null) it.withCountry(countryCodeEnum)
+                                    else it
+                                }
                         DocumentType.RESIDENCE_PERMIT -> DocumentCaptureStepBuilder.forResidencePermit()
-                            .withCountry(countryCodeEnum).build()
+                                .let {
+                                    if (countryCodeEnum != null) it.withCountry(countryCodeEnum)
+                                    else it
+                                }
                         DocumentType.VISA -> DocumentCaptureStepBuilder.forVisa()
-                            .withCountry(countryCodeEnum).build()
+                                .let {
+                                    if (countryCodeEnum != null) it.withCountry(countryCodeEnum)
+                                    else it
+                                }
                         DocumentType.WORK_PERMIT -> DocumentCaptureStepBuilder.forWorkPermit()
-                            .withCountry(countryCodeEnum).build()
+                                .let {
+                                    if (countryCodeEnum != null) it.withCountry(countryCodeEnum)
+                                    else it
+                                }
                         DocumentType.GENERIC -> DocumentCaptureStepBuilder.forGenericDocument()
-                            .withCountry(countryCodeEnum).build()
+                                .let {
+                                    if (countryCodeEnum != null) it.withCountry(countryCodeEnum)
+                                    else it
+                                }
                         DocumentType.UNKNOWN -> {
                             System.err.println("Unexpected DocumentType value: [$docTypeEnum]")
                             throw Exception("Unexpected DocumentType value.")
                         }
                     }
-                    flowStepList.add(flowStep)
-                } else if (!docTypeExists && !countryCodeExists) {
-                    flowStepList.add(FlowStep.CAPTURE_DOCUMENT)
+                    flowStepList.add(flowStep.build())
                 } else {
-                    throw Exception("For countryCode and docType: both must be specified, or both must be omitted.")
+                    flowStepList.add(FlowStep.CAPTURE_DOCUMENT)
                 }
             }
 

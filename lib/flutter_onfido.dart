@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/services.dart';
 
@@ -20,20 +19,16 @@ abstract class FlutterOnfido {
     required OnfidoConfig config,
     OnfidoIOSAppearance iosAppearance = const OnfidoIOSAppearance(),
   }) async {
-    try {
-      final error = _validateConfig(config);
-      if (error != null) {
-        throw OnfidoConfigValidationException(error);
-      }
-      final result = await _channel.invokeMethod('start', {
-        'config': config.toMap(),
-        'appearance': iosAppearance.toMap(),
-      });
-      return OnfidoResult.fromMap(Map<String, dynamic>.from( jsonDecode(jsonEncode(result)) ));
-    } catch (e) {
-      log(jsonEncode(e));
-      rethrow;
+    final error = _validateConfig(config);
+    if (error != null) {
+      throw OnfidoConfigValidationException(error);
     }
+    final result = await _channel.invokeMethod('start', {
+      'config': config.toMap(),
+      'appearance': iosAppearance.toMap(),
+    });
+    return OnfidoResult.fromMap(
+        Map<String, dynamic>.from(jsonDecode(jsonEncode(result))));
   }
 
   static String? _validateConfig(OnfidoConfig config) {
