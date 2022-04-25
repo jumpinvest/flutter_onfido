@@ -27,8 +27,10 @@ class FlutterOnfidoPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
   @Suppress("UNCHECKED_CAST")
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "start") {
-      val config = call.arguments as HashMap<*, *>
-      onfidoSdk.start(config["config"] as HashMap<String, Any?>, result)
+      val arguments = call.arguments as HashMap<*, *>
+      val config = arguments["config"] as HashMap<String, Any?>
+      val listenToUserEvents = arguments["listenToUserEvents"] as? Boolean ?: false
+      onfidoSdk.start(config, listenToUserEvents, result)
     } else {
       result.notImplemented()
     }
@@ -40,7 +42,7 @@ class FlutterOnfidoPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     methodChannel.setMethodCallHandler(this)
     val onfidoClient = OnfidoFactory.create(context).client
     activityListener = OnfidoSdkActivityEventListener(onfidoClient)
-    onfidoSdk = OnfidoSdk(null, activityListener, onfidoClient, null)
+    onfidoSdk = OnfidoSdk(null, activityListener, onfidoClient, methodChannel, null)
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
