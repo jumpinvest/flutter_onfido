@@ -56,25 +56,23 @@ class OnfidoSdk(
             }
 
             try {
+                if (listenToUserEvents) {
+                    startListeningToUserEvents()
+                }
                 var onfidoConfig = OnfidoConfig.builder(currentActivity!!)
                     .withSDKToken(sdkToken)
                     .withCustomFlow(flowStepsWithOptions)
                 if (locale != null) {
                     onfidoConfig = onfidoConfig.withLocale(Locale(locale))
                 }
-                if (listenToUserEvents) {
-                    startListeningToUserEvents()
-                }
+
                 client.startActivityForResult(currentActivity!!, 1, onfidoConfig.build())
             } catch (e: Exception) {
                 currentFlutterResult?.error("error", "Failed to show Onfido page", null)
                 setFlutterResult(null)
                 return
-            } finally {
-                stopListeningToUserEvents()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             currentFlutterResult?.error("error", "Unexpected error starting Onfido page", null)
             setFlutterResult(null)
             return
@@ -88,14 +86,10 @@ class OnfidoSdk(
                     val properties = hashMapOf("name" to eventName, "properties" to eventProperties)
                     methodChannel.invokeMethod("event", properties)
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    println(e.printStackTrace())
                 }
             }
         }
-    }
-
-    private fun stopListeningToUserEvents() {
-        Onfido.userEventHandler = null;
     }
 
     @Throws(Exception::class)
