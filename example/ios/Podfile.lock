@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_onfido (0.0.1):
+  - flutter_onfido (0.0.2):
     - Flutter
     - Onfido (= 24.2.0)
   - Onfido (24.2.0)
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_onfido: 2f68a476206e89e73d8cfc1b66b03ac5c558eace
+  flutter_onfido: 300ce2ef8fe7a0cecd66b7dfaa2b5daf26ab6228
   Onfido: 5e881be263c88d785784b34c7870f3e3f6f7cf14
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
