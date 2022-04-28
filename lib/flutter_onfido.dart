@@ -10,7 +10,7 @@ import 'onfido_config.dart';
 export './enums.dart';
 export './onfido_config.dart';
 
-typedef OnOnfidoEvent = void Function(
+typedef OnfidoEventCallback = void Function(
   String name,
   Map<String, dynamic> properties,
 );
@@ -23,7 +23,7 @@ abstract class FlutterOnfido {
   static Future<OnfidoResult> start({
     required OnfidoConfig config,
     OnfidoIOSAppearance iosAppearance = const OnfidoIOSAppearance(),
-    OnOnfidoEvent? onEvent,
+    OnfidoEventCallback? onEvent,
   }) async {
     final error = _validateConfig(config);
     if (error != null) {
@@ -62,7 +62,7 @@ abstract class FlutterOnfido {
     return null;
   }
 
-  static void _listenToEvents(OnOnfidoEvent onEvent) {
+  static void _listenToEvents(OnfidoEventCallback onEvent) {
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
         case 'event':
