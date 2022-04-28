@@ -71,10 +71,7 @@ abstract class FlutterOnfido {
             final String name = args['name'];
             final properties = Map<String, dynamic>.from(args['properties']);
             onEvent(name, properties);
-          } catch (error) {
-            print('>>>> _LISTEN TO EVENTS FLUTTER ERROR: $error');
-            // ?
-          }
+          } catch (error) {}
           break;
         default:
           break;
