@@ -36,6 +36,12 @@ class _MyAppState extends State<MyApp> {
             captureFace: OnfidoCaptureFaceStep(OnfidoCaptureType.PHOTO),
           ),
         ),
+        onEvent: (
+          String name,
+          Map<String, dynamic> properties,
+        ) {
+          log('onEvent: $name $properties');
+        },
         iosAppearance: const OnfidoIOSAppearance(
           onfidoPrimaryColor: '#0043DF',
         ),
@@ -43,10 +49,9 @@ class _MyAppState extends State<MyApp> {
       log(result.toString());
       // ASK YOUR BACKEND IF USER HAS PASSED VERIFICATION
     } catch (error) {
-      if(error is PlatformException){
-        if(error.code == 'cancel'){
-      
-        }
+      log(error.toString());
+      if (error is PlatformException) {
+        if (error.code == 'cancel') {}
       }
     }
   }

@@ -128,27 +128,46 @@ class OnfidoSdk: NSObject {
     return false
   } 
 
-  @objc func start(_ config: NSDictionary, result: @escaping FlutterResult) -> Void {
+  @objc func start(_ config: NSDictionary, channel: FlutterMethodChannel, result: @escaping FlutterResult) -> Void {
     DispatchQueue.main.async {
       let withConfig = config["config"] as! NSDictionary
       let withAppearance = config["appearance"] as! NSDictionary
-      self.run(withConfig: withConfig, withAppearance: withAppearance, result: result)
+      let listenToUserEvents = config["listenToUserEvents"] as? Bool ?? false
+
+      self.run(withConfig: withConfig,
+               withAppearance: withAppearance,
+               listenToUserEvents: listenToUserEvents,
+               channel: channel,
+               result: result)
     }
   }
 
-  private func run(withConfig config: NSDictionary, withAppearance appearanceConfig: NSDictionary, result: @escaping FlutterResult) {
+  private func run(withConfig config: NSDictionary, withAppearance appearanceConfig: NSDictionary, listenToUserEvents: Bool, channel: FlutterMethodChannel, result: @escaping FlutterResult) {
 
     do {
       let appearance = try loadAppearanceFromConfig(config: appearanceConfig)
       let onfidoConfig = try buildOnfidoConfig(config: config, appearance: appearance)
-      let builtOnfidoConfig = try onfidoConfig.build() 
+      let builtOnfidoConfig = try onfidoConfig.build()
 
       //  Copy the face varient from the config since it is not contained in the response:
       let flowSteps:NSDictionary? = config["flowSteps"] as? NSDictionary
       let captureFace:NSDictionary? = flowSteps?["captureFace"] as? NSDictionary
       let faceVariant = captureFace?["type"] as? String
 
-      let onfidoFlow = OnfidoFlow(withConfiguration: builtOnfidoConfig)
+      var onfidoFlow = OnfidoFlow(withConfiguration: builtOnfidoConfig)
+
+      if (listenToUserEvents) {
+        onfidoFlow = onfidoFlow
+          .with(eventHandler: { [weak channel] event in
+            let arguments: [String: Any] = [
+              "name": event.name,
+              "properties": event.properties
+            ]
+            channel?.invokeMethod("event", arguments: arguments)
+          })
+      }
+
+      onfidoFlow = onfidoFlow
         .with(responseHandler: { [weak self] response in 
           guard let _ = self else { return }
           switch response {

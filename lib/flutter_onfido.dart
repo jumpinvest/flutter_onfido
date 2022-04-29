@@ -10,6 +10,11 @@ import 'onfido_config.dart';
 export './enums.dart';
 export './onfido_config.dart';
 
+typedef OnfidoEventCallback = void Function(
+  String name,
+  Map<String, dynamic> properties,
+);
+
 abstract class FlutterOnfido {
   FlutterOnfido._();
 
@@ -18,17 +23,25 @@ abstract class FlutterOnfido {
   static Future<OnfidoResult> start({
     required OnfidoConfig config,
     OnfidoIOSAppearance iosAppearance = const OnfidoIOSAppearance(),
+    OnfidoEventCallback? onEvent,
   }) async {
     final error = _validateConfig(config);
     if (error != null) {
       throw OnfidoConfigValidationException(error);
     }
-    final result = await _channel.invokeMethod('start', {
+
+    if (onEvent != null) {
+      _listenToEvents(onEvent);
+    }
+
+    return _channel.invokeMethod('start', {
       'config': config.toMap(),
       'appearance': iosAppearance.toMap(),
-    });
-    return OnfidoResult.fromMap(
-        Map<String, dynamic>.from(jsonDecode(jsonEncode(result))));
+      'listenToUserEvents': onEvent != null,
+    }).then((result) {
+      final Map<String, dynamic> jsonResult = jsonDecode(jsonEncode(result));
+      return OnfidoResult.fromMap(jsonResult);
+    }).whenComplete(() => _stopListeningToEvents());
   }
 
   static String? _validateConfig(OnfidoConfig config) {
@@ -47,6 +60,27 @@ abstract class FlutterOnfido {
       return "Flow steps doesn't include either captureDocument options or captureFace options";
     }
     return null;
+  }
+
+  static void _listenToEvents(OnfidoEventCallback onEvent) {
+    _channel.setMethodCallHandler((call) async {
+      switch (call.method) {
+        case 'event':
+          try {
+            final Map args = call.arguments;
+            final String name = args['name'];
+            final properties = Map<String, dynamic>.from(args['properties']);
+            onEvent(name, properties);
+          } catch (error) {}
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  static void _stopListeningToEvents() {
+    _channel.setMethodCallHandler(null);
   }
 }
 

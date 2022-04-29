@@ -4,10 +4,12 @@ import android.app.Activity
 import com.onfido.android.sdk.capture.DocumentType
 import com.onfido.android.sdk.capture.Onfido
 import com.onfido.android.sdk.capture.OnfidoConfig
+import com.onfido.android.sdk.capture.UserEventHandler
 import com.onfido.android.sdk.capture.ui.camera.face.stepbuilder.FaceCaptureStepBuilder
 import com.onfido.android.sdk.capture.ui.options.FlowStep
 import com.onfido.android.sdk.capture.ui.options.stepbuilder.DocumentCaptureStepBuilder
 import com.onfido.android.sdk.capture.utils.CountryCode
+import com.onfido.segment.analytics.Properties
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
@@ -16,6 +18,7 @@ class OnfidoSdk(
     private var currentFlutterResult: MethodChannel.Result?,
     private var activityListener: OnfidoSdkActivityEventListener,
     private val client: Onfido,
+    private val methodChannel: MethodChannel,
     private var currentActivity: Activity?
 ) {
 
@@ -30,7 +33,7 @@ class OnfidoSdk(
         }
     }
 
-    fun start(config: HashMap<String, Any?>, result: MethodChannel.Result?) {
+    fun start(config: HashMap<String, Any?>, listenToUserEvents: Boolean, result: MethodChannel.Result?) {
         setFlutterResult(result)
         try {
             val sdkToken: String
@@ -53,12 +56,16 @@ class OnfidoSdk(
             }
 
             try {
+                if (listenToUserEvents) {
+                    startListeningToUserEvents()
+                }
                 var onfidoConfig = OnfidoConfig.builder(currentActivity!!)
                     .withSDKToken(sdkToken)
                     .withCustomFlow(flowStepsWithOptions)
-               if (locale != null) {
-                   onfidoConfig = onfidoConfig.withLocale(Locale(locale))
-               }
+                if (locale != null) {
+                    onfidoConfig = onfidoConfig.withLocale(Locale(locale))
+                }
+
                 client.startActivityForResult(currentActivity!!, 1, onfidoConfig.build())
             } catch (e: Exception) {
                 currentFlutterResult?.error("error", "Failed to show Onfido page", null)
@@ -66,10 +73,22 @@ class OnfidoSdk(
                 return
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             currentFlutterResult?.error("error", "Unexpected error starting Onfido page", null)
             setFlutterResult(null)
             return
+        }
+    }
+
+    private fun startListeningToUserEvents() {
+        Onfido.userEventHandler = object: UserEventHandler() {
+            override fun handleEvent(eventName: String, eventProperties: Properties) {
+                try {
+                    val properties = hashMapOf("name" to eventName, "properties" to eventProperties)
+                    methodChannel.invokeMethod("event", properties)
+                } catch (e: Exception) {
+                    println(e.printStackTrace())
+                }
+            }
         }
     }
 

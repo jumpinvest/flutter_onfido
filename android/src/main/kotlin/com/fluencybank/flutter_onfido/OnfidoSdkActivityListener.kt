@@ -45,6 +45,7 @@ class OnfidoSdkActivityEventListener(
                         flutterResult!!.error("error", "Error serializing response", null)
                     } finally {
                         flutterResult = null
+                        Onfido.userEventHandler = null;
                     }
                 }
             }
@@ -53,6 +54,7 @@ class OnfidoSdkActivityEventListener(
                 if (flutterResult != null) {
                     flutterResult!!.error("cancel", "User exited by clicking the back button.", null)
                     flutterResult = null
+                    Onfido.userEventHandler = null;
                 }
             }
 
@@ -60,6 +62,7 @@ class OnfidoSdkActivityEventListener(
                 if (flutterResult != null) {
                     flutterResult!!.error("error", exception.toString(), null)
                     flutterResult = null
+                    Onfido.userEventHandler = null;
                 }
             }
         })
