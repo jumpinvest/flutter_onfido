@@ -48,14 +48,18 @@ public func loadAppearanceFromConfig(config: NSDictionary) throws -> Appearance 
     let appearancePublic = try loadAppearance(config: config)
 
     if let appearancePublic = appearancePublic {
-        let appearance = Appearance()
-        appearance.primaryColor = appearancePublic.primaryColor
-        appearance.primaryTitleColor = appearancePublic.primaryTitleColor
-        appearance.primaryBackgroundPressedColor = appearancePublic.primaryBackgroundPressedColor
-        appearance.supportDarkMode = appearancePublic.supportDarkMode
-        return appearance
+        let apperance = Appearance();
+        apperance.primaryColor = appearancePublic.primaryColor;
+        apperance.primaryTitleColor = appearancePublic.primaryTitleColor;
+        apperance.primaryBackgroundPressedColor = appearancePublic.primaryBackgroundPressedColor;
+        apperance.supportDarkMode = appearancePublic.supportDarkMode;
+        return apperance;
     } else {
-        return Appearance.default
+        let apperance = Appearance.default;
+        apperance.primaryColor = UIColor.primaryColor;
+        apperance.primaryTitleColor = UIColor.white;
+        apperance.primaryBackgroundPressedColor = UIColor.primaryButtonColorPressed;
+        return apperance;
     }
 }
 
@@ -126,7 +130,7 @@ class OnfidoSdk: NSObject {
 
   @objc static func requiresMainQueueSetup() -> Bool {
     return false
-  } 
+  }
 
   @objc func start(_ config: NSDictionary, channel: FlutterMethodChannel, result: @escaping FlutterResult) -> Void {
     DispatchQueue.main.async {
@@ -168,8 +172,8 @@ class OnfidoSdk: NSObject {
       }
 
       onfidoFlow = onfidoFlow
-        .with(responseHandler: { [weak self] response in 
-          guard let _ = self else { return }
+        .with(responseHandler: { [weak self] response in
+            guard self != nil else { return }
           switch response {
             case let .error(error):
               result(FlutterError(code: "error", message: "Encountered an error: \(error)", details: nil))
@@ -247,11 +251,7 @@ extension UIColor {
 }
 
 extension Appearance {
-    static let `default`: Appearance = {
-        let appearance = Appearance()
-        appearance.primaryColor = UIColor.primaryColor
-        appearance.primaryTitleColor = UIColor.white
-        appearance.primaryBackgroundPressedColor = UIColor.primaryButtonColorPressed
-        return appearance
-    }()
+
+    static let `default` = Appearance()
+
 }
